@@ -101,12 +101,12 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:
     <form onsubmit="doLogin(event)">
       <div class="form-group">
         <label id="accountLabel">學號</label>
-        <input id="inputAccount" type="text" placeholder="請輸入學號" autocomplete="username" required>
+        <input id="inputAccount" type="text" placeholder="例如：1120001" autocomplete="username" required>
       </div>
       <div class="form-group">
         <label>密碼</label>
         <input id="inputPassword" type="password" placeholder="" autocomplete="current-password" required>
-        <p id="pwHint" class="hint">密碼為生日 MMDD，例如 8月16日請輸入 0816</p>
+        <p id="pwHint" class="hint">密碼為身分證字號（10碼，英文字母請大寫），例如：A123456789</p>
       </div>
       <button type="submit" class="btn-login" id="btnLogin">登入</button>
     </form>
@@ -149,12 +149,12 @@ function setRole(role) {
 
   if (role === 'student') {
     label.textContent = '學號';
-    acct.placeholder  = '請輸入學號，例如 1120041';
-    hint.textContent  = '密碼為生日 MMDD，例如 8月16日請輸入 0816';
+    acct.placeholder  = '例如：1120001';
+    hint.textContent  = '密碼為身分證字號（10碼，英文字母請大寫），例如：A123456789';
   } else if (role === 'parent') {
     label.textContent = '學號（孩子的學號）';
-    acct.placeholder  = '請輸入孩子的學號';
-    hint.textContent  = '密碼為孩子身分證號後4碼';
+    acct.placeholder  = '例如：1120001';
+    hint.textContent  = '密碼為身分證後4碼 + 孩子生日MMDD（共8碼），例如：82320816';
   } else {
     label.textContent = '導師帳號';
     acct.placeholder  = '請輸入導師帳號';
@@ -247,28 +247,26 @@ async function showApp() {
 function renderStudent(d, name, role) {
   const roleTag = role === 'parent' ? `（${name} 家長）` : '';
 
-  // 判斷欄位是否為連結文字
+  // 將文字中的網址轉為可點擊按鈕連結，支援多個網址與換行
   function linkOrText(val) {
     if (!val) return '<span style="color:var(--muted)">暫無資料</span>';
-    // 若包含網址，做成連結
-    const urlReg = /(https?:\/\/[^\s]+)/g;
-    if (urlReg.test(val)) {
-      return val.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">點此查詢 ↗</a>');
-    }
-    return val;
+    const str = String(val);
+    const linked = str.replace(/(https?:\/\/[^\s\u3000，。、）)]+)/g,
+      '<a href="$1" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.25rem;background:var(--primary);color:#fff;padding:.2rem .65rem;border-radius:6px;font-size:.8rem;font-weight:600;text-decoration:none;margin:.15rem 0">點此查詢 ↗</a>');
+    return linked.replace(/\n/g, '<br>');
   }
 
   const cards = [
-    { title: '缺曠狀況',       value: d.absence,    color: 'warning', icon: '📋' },
-    { title: '獎懲記錄',       value: d.reward,     color: 'info',    icon: '🏅' },
-    { title: '消過進度',       value: d.demerit,    color: 'danger',  icon: '📝' },
-    { title: '到校交通狀況',   value: d.transport,  color: 'success', icon: '🚌' },
-    { title: '學校費用繳交狀況', value: d.fee,      color: 'warning', icon: '💰' },
-    { title: '班級作業繳交狀況', value: d.homework, color: 'info',    icon: '📚' },
-    { title: '考試表現狀況',   value: d.exam,       color: 'primary', icon: '✏️' },
-    { title: '生活常規表現',   value: d.conduct,    color: 'success', icon: '⭐' },
-    { title: '學習輔導建議',   value: d.counseling, color: '',        icon: '💡' },
-    { title: '升學進路輔導建議', value: d.career,   value: d.career,  color: 'info', icon: '🎓' },
+    { title: '缺曠狀況',         value: d.absence,    color: 'warning', icon: '📋' },
+    { title: '獎懲記錄',         value: d.reward,     color: 'info',    icon: '🏅' },
+    { title: '消過進度',         value: d.demerit,    color: 'danger',  icon: '📝' },
+    { title: '到校交通狀況',     value: d.transport,  color: 'success', icon: '🚌' },
+    { title: '學校費用繳交狀況', value: d.fee,        color: 'warning', icon: '💰' },
+    { title: '班級作業繳交狀況', value: d.homework,   color: 'info',    icon: '📚' },
+    { title: '考試表現狀況',     value: d.exam,       color: 'primary', icon: '✏️' },
+    { title: '生活常規表現',     value: d.conduct,    color: 'success', icon: '⭐' },
+    { title: '學習輔導建議',     value: d.counseling, color: '',        icon: '💡' },
+    { title: '升學進路輔導建議', value: d.career,     color: 'info',    icon: '🎓' },
   ];
 
   const html = `
