@@ -150,11 +150,11 @@ function setRole(role) {
   if (role === 'student') {
     label.textContent = '學號';
     acct.placeholder  = '例如：1120001';
-    hint.textContent  = '密碼請向導師確認（學生密碼）';
+    hint.textContent  = '密碼為身分證字號（10碼，英文字母請大寫），例如：A123456789';
   } else if (role === 'parent') {
     label.textContent = '學號（孩子的學號）';
     acct.placeholder  = '例如：1120001';
-    hint.textContent  = '密碼請向導師確認（家長密碼）';
+    hint.textContent  = '密碼為孩子身分證字號後四碼＋生日MMDD，例如：12340101';
   } else {
     label.textContent = '導師帳號';
     acct.placeholder  = '請輸入導師帳號';
